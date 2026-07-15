@@ -1,43 +1,60 @@
 package com.challenge.api.controller;
 
-import com.challenge.api.model.Employee;
+import com.challenge.api.dto.CreateEmployeeRequest;
+import com.challenge.api.dto.EmployeeResponse;
+import com.challenge.api.service.EmployeeService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * Fill in the missing aspects of this Spring Web REST Controller. Don't forget to add a Service layer.
+ * REST controller exposing employee management endpoints.
+ * Delegates all business logic to {@link EmployeeService} — no domain logic resides here.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/employee")
 public class EmployeeController {
 
-    /**
-     * @implNote Need not be concerned with an actual persistence layer. Generate mock Employee models as necessary.
-     * @return One or more Employees.
-     */
-    public List<Employee> getAllEmployees() {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    private final EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     /**
-     * @implNote Need not be concerned with an actual persistence layer. Generate mock Employee model as necessary.
+     * @return All employees, unfiltered.
+     */
+    @GetMapping
+    public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
+        log.info("GET /api/v1/employee - Retrieving all employees");
+        List<EmployeeResponse> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
+    }
+
+    /**
      * @param uuid Employee UUID
      * @return Requested Employee if exists
      */
-    public Employee getEmployeeByUuid(UUID uuid) {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    @GetMapping("/{uuid}")
+    public ResponseEntity<EmployeeResponse> getEmployeeByUuid(@PathVariable UUID uuid) {
+        log.info("GET /api/v1/employee/{} - Retrieving employee by UUID", uuid);
+        EmployeeResponse employee = employeeService.getEmployeeByUuid(uuid);
+        return ResponseEntity.ok(employee);
     }
 
     /**
-     * @implNote Need not be concerned with an actual persistence layer.
-     * @param requestBody hint!
+     * @param request Validated employee creation request
      * @return Newly created Employee
      */
-    public Employee createEmployee(Object requestBody) {
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
+    @PostMapping
+    public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
+        log.info("POST /api/v1/employee - Creating new employee: {} {}", request.getFirstName(), request.getLastName());
+        EmployeeResponse employee = employeeService.createEmployee(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
     }
 }
