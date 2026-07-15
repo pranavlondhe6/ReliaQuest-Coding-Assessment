@@ -7,6 +7,14 @@ Please keep the following in mind while working on this challenge:
   * E.g. avoid liberal use of new-lines, odd variable and method names, random indentation, etc...
 * Test cases are not required
 
+> [!IMPORTANT]
+> **JDK & Gradle Compatibility Note:**
+> This project uses the default Gradle 7.6.4 wrapper which is fully compatible with **JDK 17**.
+> If your local environment uses **JDK 21** (or higher), the build task might fail with `Unsupported class file major version 65`.
+> In that case:
+> - Either compile/build the project using **JDK 17**, OR
+> - Upgrade the wrapper URL in `gradle/wrapper/gradle-wrapper.properties` to `gradle-8.5-bin.zip` to run it on **JDK 21**.
+
 ## Problem Statement
 
 Your employer has recently purchased a license to top-tier SaaS platform, Employees-R-US, to off-load all employee management responsibilities.
